@@ -1,0 +1,27 @@
+version: '2'
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - ./src/test/resources/my.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+
+  canal-server:
+    image: canal/canal-server:v1.1.1
+    ports:
+      - "11111:11111"
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    environment:
+      - canal.destinations=example
+      - canal.instance.master.address=mysql:3306
+      - canal.instance.dbUsername=root
+      - canal.instance.dbPassword=password
+      - canal.instance.connectionCharset=UTF-8
+
